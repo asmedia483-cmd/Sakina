@@ -11,12 +11,14 @@
 :root{--gold:#d9a93f;--gold2:#f3d27a;--green:#0e5a46;--ink:#0b0f16;--storm:#1b2431;--text:#eef2f7;--soft:rgba(238,242,247,.68)}
 *{box-sizing:border-box}
 html{scroll-behavior:smooth}
-body{margin:0;background:linear-gradient(#090c11,#1d2634 40%,#4a586b) fixed;color:var(--text);font-family:'Tajawal',sans-serif;overflow-x:hidden}
+body{margin:0;background:#141b26;color:var(--text);font-family:'Tajawal',sans-serif;overflow-x:clip}
+body:not(.ready){overflow:hidden}
 h1,h2,h3{font-family:'El Messiri','Tajawal',sans-serif;margin:0}
 button{font-family:inherit;cursor:pointer}
 
 /* ---- storm ---- */
 .sky,.sky div{position:fixed;inset:0;pointer-events:none}
+.sky{overflow:hidden;background:linear-gradient(#090c11,#1d2634 40%,#4a586b)}
 .cloud{filter:blur(30px);background:
  radial-gradient(34% 17% at 12% 16%,rgba(96,110,131,.8),transparent 72%),
  radial-gradient(42% 19% at 50% 7%,rgba(70,83,102,.85),transparent 72%),
@@ -29,7 +31,7 @@ button{font-family:inherit;cursor:pointer}
 @keyframes drift{from{transform:translateX(-7%) scale(1.15)}to{transform:translateX(7%) scale(1.15)}}
 .fog{background:linear-gradient(transparent 60%,rgba(170,184,204,.38))}
 .flash{background:radial-gradient(70% 50% at 50% 0,rgba(190,210,255,.55),rgba(120,150,210,.18) 60%,transparent);opacity:0}
-#bolt{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;mix-blend-mode:screen}
+#bolt{position:fixed;inset:0;width:100%;height:100%;pointer-events:none}
 .flash{background:radial-gradient(70% 50% at 50% 0,rgba(190,210,255,.55),rgba(120,150,210,.18) 60%,transparent);opacity:0}
 
 /* ---- header ---- */
@@ -49,7 +51,9 @@ header{position:fixed;top:0;inset-inline:0;z-index:10;display:flex;justify-conte
 .sec h2.h{font-size:clamp(26px,4vw,40px);color:var(--gold2);text-align:center}
 .sec h2.h::after{content:'';display:block;width:70px;height:3px;margin:10px auto 0;background:linear-gradient(90deg,transparent,var(--gold),transparent)}
 .sec .sub{text-align:center;color:var(--soft);margin:12px 0 34px}
-.cue{position:absolute;bottom:18px;inset-inline:0;margin:auto;width:max-content;z-index:5;color:#fff;text-decoration:none;font-weight:700;font-size:14px;background:rgba(10,14,20,.6);border:1px solid rgba(217,169,63,.5);padding:8px 18px;border-radius:99px;backdrop-filter:blur(8px)}
+.cue{position:absolute;bottom:18px;inset-inline:0;margin:auto;width:max-content;z-index:5;display:flex;gap:8px}
+.cue a{color:#fff;text-decoration:none;font-weight:700;font-size:14px;background:rgba(10,14,20,.7);border:1px solid rgba(217,169,63,.5);padding:9px 18px;border-radius:99px;backdrop-filter:blur(8px);transition:.3s}
+.cue a:hover{background:var(--gold);color:#2a1c00}
 .cue b{display:inline-block;animation:bob 1.4s infinite}@keyframes bob{50%{transform:translateY(5px)}}
 .dg{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
 .dc{position:relative;height:230px;border-radius:18px;overflow:hidden;cursor:pointer;border:1px solid rgba(217,169,63,.35);background:#1b2431;box-shadow:0 14px 34px rgba(0,0,0,.45);transition:transform .35s}
@@ -93,7 +97,7 @@ footer.f{position:relative;z-index:3;text-align:center;padding:40px 20px calc(40
 /* ---- globe ---- */
 #hero{position:relative;height:100vh;height:100svh;min-height:580px}
 #stage{position:absolute;inset:0;z-index:2}
-#gl{position:absolute;inset:0;width:100%;height:100%;cursor:grab;touch-action:none}
+#gl{position:absolute;inset:0;width:100%;height:100%;cursor:grab;touch-action:pan-y}
 #flags{position:absolute;inset:0;pointer-events:none;overflow:hidden}
 .fl{position:absolute;left:0;top:0;width:22px;height:auto;border-radius:3px;box-shadow:0 0 0 1px rgba(255,255,255,.55),0 2px 8px rgba(0,0,0,.6);pointer-events:auto;cursor:pointer;opacity:0;transition:width .2s,box-shadow .2s;will-change:transform}
 .fl:hover,.fl.on{width:34px;z-index:3;box-shadow:0 0 0 2px var(--gold),0 4px 16px rgba(217,169,63,.6)}
@@ -199,9 +203,45 @@ header{animation:sd .9s .1s both}
 #toast{position:fixed;z-index:50;left:50%;bottom:90px;transform:translate(-50%,30px);background:#0e1a24;border:1px solid var(--gold);color:#fff;padding:12px 20px;border-radius:14px;opacity:0;pointer-events:none;transition:.4s;font-weight:700}
 #toast.show{opacity:1;transform:translate(-50%,0)}
 @media(max-width:900px){.sbar{display:none}.soc a .ico{width:58px;height:58px}}
+
+/* ---- splash / preloader ---- */
+#splash{position:fixed;inset:0;z-index:999;display:grid;place-items:center;background:radial-gradient(60% 50% at 50% 40%,#1b2431,#07090d);transition:opacity .8s,visibility .8s}
+#splash.out{opacity:0;visibility:hidden}
+.sp-in{text-align:center;width:min(320px,80vw)}
+.sp-in svg{width:100px;height:100px;filter:drop-shadow(0 0 18px rgba(217,169,63,.6))}
+.sp-in polygon{stroke-dasharray:200;stroke-dashoffset:200;animation:draw 1.6s ease forwards}
+.sp-in text{animation:fu 1s 1s both}
+@keyframes draw{to{stroke-dashoffset:0}}
+.sp-in b{display:block;font:700 28px 'El Messiri';color:var(--gold2);margin-top:6px}
+.sp-in small{color:var(--soft)}
+.bar{height:6px;border-radius:9px;background:rgba(255,255,255,.12);margin:26px 0 10px;overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--green),var(--gold2));transition:width .35s;border-radius:9px;box-shadow:0 0 12px var(--gold)}
+#spPct{font-weight:900;font-size:18px}
+.sp-in em{display:block;font-style:normal;color:var(--soft);font-size:13px;margin-top:6px}
+#spBtns{display:none;gap:8px;margin-top:16px;justify-content:center}
+#spBtns button{padding:10px 18px;border-radius:12px;border:1px solid var(--gold);background:rgba(14,90,70,.6);color:#fff;font-weight:700}
+body:not(.ready) :is(header,.title,.title *,.cue,.cue *,.sbar a,.wafab){animation-play-state:paused}
+/* ---- zoom buttons ---- */
+.zm{position:absolute;z-index:6;inset-inline-end:14px;bottom:74px;display:flex;flex-direction:column;gap:8px}
+.zm button{width:44px;height:44px;border-radius:50%;border:1.5px solid rgba(217,169,63,.6);background:rgba(10,14,20,.75);color:#fff;font-size:24px;font-weight:700;backdrop-filter:blur(8px);transition:.25s}
+.zm button:active,.zm button:hover{background:var(--gold);color:#2a1c00}
+@media(max-width:760px){
+  .fl{width:19px}.fl:hover,.fl.on{width:28px}
+  .title{transition:opacity .5s,visibility .5s}
+  body.sel .title{opacity:0;visibility:hidden}
+  .cue{bottom:14px}.zm{bottom:66px}
+}
 </style>
 </head>
 <body>
+<div id="splash"><div class="sp-in">
+  <svg viewBox="0 0 48 48"><polygon points="24,3 43,14 43,34 24,45 5,34 5,14" fill="none" stroke="#d9a93f" stroke-width="3"/><text x="24" y="31" text-anchor="middle" font-size="20" font-weight="900" fill="#f3d27a" font-family="El Messiri">S</text></svg>
+  <b>سكينة للسفر</b><small>Groupe Sakina SARL</small>
+  <div class="bar"><i id="spBar"></i></div>
+  <span id="spPct">0%</span>
+  <em id="spMsg">جارٍ تجهيز رحلتك… الخريطة والصور والأعلام</em>
+  <div id="spBtns"><button id="spRetry">إعادة المحاولة</button><button id="spGo">متابعة</button></div>
+</div></div>
 <div class="sky"><div class="cloud"></div><div class="cloud c2"></div><div class="cloud c3"></div><div class="fog"></div><div class="flash" id="flash"></div></div>
 <canvas id="bolt"></canvas>
 
@@ -224,8 +264,9 @@ header{animation:sd .9s .1s both}
 </div>
 
 <div id="stage"><canvas id="gl"></canvas><div id="flags"></div></div>
-<div id="loading">جارٍ تحميل خريطة العالم…</div>
-<a class="cue" href="#destinations">الوجهات والعروض <b>⌄</b></a>
+<div id="loading"></div>
+<div class="cue"><a href="#destinations">الوجهات <b>⌄</b></a><a href="#offers">العروض <b>⌄</b></a></div>
+<div class="zm"><button id="zin" aria-label="تكبير">+</button><button id="zout" aria-label="تصغير">−</button></div>
 </section>
 
 <section class="sec" id="destinations"><div class="wrap">
@@ -307,6 +348,21 @@ const WA='249914040157';
 /* روابط التواصل الاجتماعي: ضع رابط كل حساب بين علامتي التنصيص، والفارغ يُخفى تلقائياً */
 const SOCIAL={facebook:'',instagram:'',tiktok:'',youtube:'',telegram:''};
 const $=id=>document.getElementById(id);
+/* ===== preloader ===== */
+const WT={font:5,tex:30,atlas:15,data:10,flags:25,dest:15},FR={font:0,tex:0,atlas:0,data:0,flags:0,dest:0};
+let shown=0,finished=false;
+function prog(k,v){
+  FR[k]=Math.max(FR[k],Math.min(1,v));let t=0;for(const n in WT)t+=WT[n]*FR[n];
+  if(t>shown)shown=t;$('spBar').style.width=shown+'%';$('spPct').textContent=Math.round(shown)+'%';
+  if(shown>=99.5)finish();
+}
+function finish(){
+  if(finished)return;finished=true;$('spBar').style.width='100%';$('spPct').textContent='100%';
+  setTimeout(()=>{document.body.classList.add('ready');const sp=$('splash');sp.classList.add('out');setTimeout(()=>sp.remove(),900)},350);
+}
+setTimeout(finish,40000);
+Promise.race([document.fonts?document.fonts.ready:0,new Promise(r=>setTimeout(r,6000))]).then(()=>prog('font',1));
+$('spGo').onclick=finish;$('spRetry').onclick=()=>location.reload();
 
 
 /* ================= REAL MOVING CLOUDS ================= */
@@ -388,9 +444,10 @@ globe.add(overlay);
 // real Earth photos (NASA-style textures), with mirrors
 let realTex=false;
 const tl=new THREE.TextureLoader();tl.setCrossOrigin('anonymous');
+let texN=0;const texTick=()=>prog('tex',++texN/4);
 function loadTex(name,cb){
   const u=[`https://cdn.jsdelivr.net/gh/mrdoob/three.js@r128/examples/textures/planets/${name}`,`https://threejs.org/examples/textures/planets/${name}`,`https://raw.githack.com/mrdoob/three.js/r128/examples/textures/planets/${name}`];
-  (function t(i){if(i<u.length)tl.load(u[i],cb,undefined,()=>t(i+1))})(0);
+  (function t(i){if(i<u.length)tl.load(u[i],x=>{cb(x);texTick()},undefined,()=>t(i+1));else texTick()})(0);
 }
 loadTex('earth_atmos_2048.jpg',t=>{t.anisotropy=8;earthMat.map=t;earthMat.color.set(0xffffff);earthMat.needsUpdate=true;realTex=true;paint()});
 loadTex('earth_normal_2048.jpg',t=>{earthMat.normalMap=t;earthMat.normalScale=new THREE.Vector2(.6,.6);earthMat.needsUpdate=true});
@@ -415,11 +472,16 @@ const jb=new THREE.Mesh(new THREE.ConeGeometry(.07,.26,14),new THREE.MeshBasicMa
 const jw=new THREE.Mesh(new THREE.BoxGeometry(.26,.025,.05),new THREE.MeshBasicMaterial({color:0xd9a93f}));jw.position.y=-.04;jet.add(jw);
 ring.add(jet);let jt=0;
 
+let zoom=1,zoomC=1,baseZ=7,baseY=-.25,gyT=-.25,gy=-.25,panelOpen=false;
+function applyY(){const vis=.728*baseZ;gyT=(panelOpen&&camera.aspect<.8)?.22*vis:baseY}
 function size(){
   const w=W=stage.clientWidth||innerWidth,h=H=stage.clientHeight||innerHeight;renderer.setSize(w,h,false);camera.aspect=w/h;
-  camera.position.z=7/Math.min(1,camera.aspect*1.05);camera.updateProjectionMatrix();
-  globe.position.y=-.25;ringG.position.copy(globe.position);fit();
+  const a=camera.aspect;baseZ=a<.8?5.4/a:7/Math.min(1,a*1.05);
+  camera.position.z=baseZ/zoomC;camera.updateProjectionMatrix();
+  baseY=a<.8?-.12*.728*baseZ:-.25;applyY();gy=gyT;
+  globe.position.y=gy;ringG.position.copy(globe.position);fit();
 }
+$('zin').onclick=()=>{zoom=Math.min(2.8,zoom*1.3)};$('zout').onclick=()=>{zoom=Math.max(.7,zoom/1.3)};
 addEventListener('resize',size);size();
 
 /* ---- helpers ---- */
@@ -478,11 +540,12 @@ function findCountry(lon,lat){
 /* ---- flags overlay ---- */
 const flagEls=[];
 function buildFlags(){
+  let ft=0;const fn=Object.values(info).filter(c=>c.ll).length;if(!fn)prog('flags',1);
   Object.values(info).forEach(c=>{
     if(!c.ll)return;
     const lat=c.ll[0]*Math.PI/180,lon=c.ll[1]*Math.PI/180,r=R*1.012;
     c.v=new THREE.Vector3(r*Math.cos(lat)*Math.cos(lon),r*Math.sin(lat),-r*Math.cos(lat)*Math.sin(lon));
-    const im=new Image();im.className='fl';im.loading='lazy';im.alt=c.ar;im.title=c.ar;
+    const im=new Image();im.className='fl';let ok=false;const once=()=>{if(!ok){ok=true;prog('flags',++ft/fn)}};im.addEventListener('load',once);im.addEventListener('error',once);im.alt=c.ar;im.title=c.ar;
     setFlag(im,c.cca2,40);
     im.onclick=()=>select(c.id);c.el=im;$('flags').appendChild(im);flagEls.push(c);
   });
@@ -495,6 +558,7 @@ canvas.addEventListener('pointermove',e=>{
   if(!drag)return;const dx=e.clientX-lx,dy=e.clientY-ly;lx=e.clientX;ly=e.clientY;moved+=Math.abs(dx)+Math.abs(dy);
   try_+=dx*.006;trx=Math.max(-1.1,Math.min(1.1,trx+dy*.004));
 });
+canvas.addEventListener('pointercancel',()=>{drag=false;canvas.style.cursor='grab'});
 canvas.addEventListener('pointerup',e=>{
   drag=false;canvas.style.cursor='grab';
   if(moved<6)pick(e.clientX,e.clientY);
@@ -516,13 +580,13 @@ function select(id){
   const c=info[id];if(!c)return;cur=c;sel=id;auto=false;paint();if(document.activeElement!==q)q.value=c.ar;
   flagEls.forEach(x=>x.el&&x.el.classList.toggle('on',x.id===id));
   if(c.ll){const th=-Math.PI/2-c.ll[1]*Math.PI/180;try_=th+2*Math.PI*Math.round((ry-th)/(2*Math.PI));trx=c.ll[0]*Math.PI/180*.9}
-  setFlag($('pFlag'),c.cca2,320);
+  panelOpen=true;document.body.classList.add('sel');applyY();setFlag($('pFlag'),c.cca2,320);
   $('pName').textContent=c.ar;$('pEn').textContent=c.en;
   $('pLang').textContent=c.langAr=lang(c);$('pCur').textContent=c.curAr=money(c);
   $('pCap').textContent=c.cap;
   $('panel').classList.add('show');
 }
-$('pClose').onclick=()=>{q.value='';$('panel').classList.remove('show');sel=null;paint();auto=true;flagEls.forEach(x=>x.el&&x.el.classList.remove('on'))};
+$('pClose').onclick=()=>{q.value='';panelOpen=false;document.body.classList.remove('sel');applyY();$('panel').classList.remove('show');sel=null;paint();auto=true;flagEls.forEach(x=>x.el&&x.el.classList.remove('on'))};
 
 /* ---- modal: photos then form ---- */
 const modal=$('modal');
@@ -608,7 +672,8 @@ const DEST=[
  {q:'Marrakech Jemaa el-Fnaa',ar:'مراكش',cc:'MA'},{q:'Maldives beach resort',ar:'المالديف',cc:'MV'}];
 async function commonsOne(q){
   try{
-    const r=await fetch(`https://commons.wikimedia.org/w/api.php?action=query&format=json&origin=*&generator=search&gsrnamespace=6&gsrlimit=8&gsrsearch=${encodeURIComponent(q+' filetype:bitmap')}&prop=imageinfo&iiprop=url|mime&iiurlwidth=700`).then(r=>r.json());
+    const ac=new AbortController();setTimeout(()=>ac.abort(),12000);
+    const r=await fetch(`https://commons.wikimedia.org/w/api.php?action=query&format=json&origin=*&generator=search&gsrnamespace=6&gsrlimit=8&gsrsearch=${encodeURIComponent(q+' filetype:bitmap')}&prop=imageinfo&iiprop=url|mime&iiurlwidth=700`,{signal:ac.signal}).then(r=>r.json());
     const l=Object.values(r.query.pages).sort((a,b)=>a.index-b.index).map(p=>p.imageinfo&&p.imageinfo[0]).filter(i=>i&&i.mime==='image/jpeg');
     return l[0]&&l[0].thumburl;
   }catch(e){return null}
@@ -624,8 +689,12 @@ DEST.forEach(d=>{
   };
   $('dg').appendChild(c);d.el=c;
 });
-new IntersectionObserver((e,o)=>{if(e[0].isIntersecting){o.disconnect();
-  DEST.forEach(async d=>{const u=await commonsOne(d.q);if(!u)return;const im=new Image();im.className='ph';im.alt=d.ar;im.referrerPolicy='no-referrer';im.onload=()=>im.classList.add('in');im.src=u;d.el.prepend(im)})}},{rootMargin:'300px'}).observe($('destinations'));
+let dd=0;const dTick=()=>prog('dest',++dd/DEST.length);
+DEST.forEach(async d=>{
+  const u=await commonsOne(d.q);if(!u){dTick();return}
+  const im=new Image();im.className='ph';im.alt=d.ar;im.referrerPolicy='no-referrer';
+  im.onload=()=>{im.classList.add('in');dTick()};im.onerror=()=>dTick();im.src=u;d.el.prepend(im);
+});
 const ICONS={
  whatsapp:'<path d="M12 3a9 9 0 0 0-7.7 13.6L3 21l4.5-1.2A9 9 0 1 0 12 3z"/><path d="M9 8.5c0 3.5 3 6.5 6.5 6.5l1-1.5-2-1-1 .8a5 5 0 0 1-2.3-2.3l.8-1-1-2z"/>',
  facebook:'<path d="M14 8h3V4h-3a4 4 0 0 0-4 4v3H7v4h3v6h4v-6h3l1-4h-4V8z"/>',
@@ -673,7 +742,7 @@ function frame(){
   requestAnimationFrame(frame);if(!heroOn)return;
   if(auto&&!drag)try_+=.0018;
   ry+=(try_-ry)*.07;rx+=(trx-rx)*.07;
-  clouds.rotation.y+=.0004;ring.rotation.z+=.0016;ring2.rotation.z-=.001;jt+=.014;jet.position.set(R*1.3*Math.cos(jt),R*1.3*Math.sin(jt),0);jet.rotation.z=jt;globe.rotation.set(rx,ry,0);globe.updateMatrixWorld();
+  zoomC+=(zoom-zoomC)*.12;camera.position.z=baseZ/zoomC;gy+=(gyT-gy)*.08;globe.position.y=gy;ringG.position.copy(globe.position);clouds.rotation.y+=.0004;ring.rotation.z+=.0016;ring2.rotation.z-=.001;jt+=.014;jet.position.set(R*1.3*Math.cos(jt),R*1.3*Math.sin(jt),0);jet.rotation.z=jt;globe.rotation.set(rx,ry,0);globe.updateMatrixWorld();
   renderer.render(scene,camera);
   const w=W,h=H;
   flagEls.forEach(c=>{
@@ -694,11 +763,12 @@ paint();
   let step='خريطة العالم';
   try{
     const topo=await getJSON([
+      'https://cdn.jsdelivr.net/npm/world-atlas@2/countries-50m.json',
+      'https://fastly.jsdelivr.net/npm/world-atlas@2/countries-50m.json',
+      'https://unpkg.com/world-atlas@2/countries-50m.json',
       'https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json',
-      'https://fastly.jsdelivr.net/npm/world-atlas@2/countries-110m.json',
-      'https://gcore.jsdelivr.net/npm/world-atlas@2/countries-110m.json',
       'https://unpkg.com/world-atlas@2/countries-110m.json']);
-    feats=topoFeatures(topo);paint();
+    feats=topoFeatures(topo);paint();prog('atlas',1);
     step='بيانات الدول';
     const rest=await getJSON([
       'https://cdn.jsdelivr.net/npm/world-countries@5.0.0/countries.json',
@@ -710,11 +780,10 @@ paint();
       let ar=c.name.common;try{ar=dReg?dReg.of(c.cca2)||ar:ar}catch(e){}
       info[c.ccn3]={id:c.ccn3,cca2:c.cca2,ar,en:c.name.common,languages:c.languages,currencies:c.currencies,ll:c.latlng,cap:(c.capital&&c.capital[0])||'—'};
     });
-    buildFlags();
-    $('loading').style.opacity=0;
+    prog('data',1);buildFlags();
   }catch(e){
     console.error(e);
-    $('loading').innerHTML='تعذّر تحميل '+step+'<br><small style="color:#fff;font-weight:400">'+(e&&e.message||e)+'</small>';
+    $('spMsg').innerHTML='تعذّر تحميل '+step+' — تأكد من الاتصال بالإنترنت';$('spBtns').style.display='flex';
   }
 })();
 frame();
